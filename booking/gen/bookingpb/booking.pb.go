@@ -81,18 +81,17 @@ func (BookingStatus) EnumDescriptor() ([]byte, []int) {
 }
 
 type Booking struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId         string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	PlaceId        string                 `protobuf:"bytes,3,opt,name=place_id,json=placeId,proto3" json:"place_id,omitempty"`
-	Place          *Place                 `protobuf:"bytes,4,opt,name=place,proto3" json:"place,omitempty"`
-	Details        *BookingDetails        `protobuf:"bytes,5,opt,name=details,proto3" json:"details,omitempty"`
-	Status         BookingStatus          `protobuf:"varint,6,opt,name=status,proto3,enum=booking.BookingStatus" json:"status,omitempty"`
-	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	ParticipantIds []string               `protobuf:"bytes,8,rep,name=participant_ids,json=participantIds,proto3" json:"participant_ids,omitempty"`
-	TotalPrice     float32                `protobuf:"fixed32,9,opt,name=total_price,json=totalPrice,proto3" json:"total_price,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	PlaceId       string                 `protobuf:"bytes,3,opt,name=place_id,json=placeId,proto3" json:"place_id,omitempty"`
+	Place         *Place                 `protobuf:"bytes,4,opt,name=place,proto3" json:"place,omitempty"`
+	Details       *BookingDetails        `protobuf:"bytes,5,opt,name=details,proto3" json:"details,omitempty"`
+	Status        BookingStatus          `protobuf:"varint,6,opt,name=status,proto3,enum=booking.BookingStatus" json:"status,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	TotalPrice    float32                `protobuf:"fixed32,8,opt,name=total_price,json=totalPrice,proto3" json:"total_price,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Booking) Reset() {
@@ -174,13 +173,6 @@ func (x *Booking) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Booking) GetParticipantIds() []string {
-	if x != nil {
-		return x.ParticipantIds
-	}
-	return nil
-}
-
 func (x *Booking) GetTotalPrice() float32 {
 	if x != nil {
 		return x.TotalPrice
@@ -191,8 +183,7 @@ func (x *Booking) GetTotalPrice() float32 {
 type BookingDetails struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Description   string                 `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
-	Participants  int32                  `protobuf:"varint,2,opt,name=participants,proto3" json:"participants,omitempty"`
-	Extras        map[string]string      `protobuf:"bytes,3,rep,name=extras,proto3" json:"extras,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Extras        map[string]string      `protobuf:"bytes,2,rep,name=extras,proto3" json:"extras,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -232,13 +223,6 @@ func (x *BookingDetails) GetDescription() string {
 		return x.Description
 	}
 	return ""
-}
-
-func (x *BookingDetails) GetParticipants() int32 {
-	if x != nil {
-		return x.Participants
-	}
-	return 0
 }
 
 func (x *BookingDetails) GetExtras() map[string]string {
@@ -357,13 +341,12 @@ func (x *Place) GetAvailableTo() *timestamppb.Timestamp {
 }
 
 type CreateBookingRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	UserId         string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	PlaceId        string                 `protobuf:"bytes,2,opt,name=place_id,json=placeId,proto3" json:"place_id,omitempty"`
-	Details        *BookingDetails        `protobuf:"bytes,3,opt,name=details,proto3" json:"details,omitempty"`
-	ParticipantIds []string               `protobuf:"bytes,4,rep,name=participant_ids,json=participantIds,proto3" json:"participant_ids,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	PlaceId       string                 `protobuf:"bytes,2,opt,name=place_id,json=placeId,proto3" json:"place_id,omitempty"`
+	Details       *BookingDetails        `protobuf:"bytes,3,opt,name=details,proto3" json:"details,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateBookingRequest) Reset() {
@@ -413,13 +396,6 @@ func (x *CreateBookingRequest) GetPlaceId() string {
 func (x *CreateBookingRequest) GetDetails() *BookingDetails {
 	if x != nil {
 		return x.Details
-	}
-	return nil
-}
-
-func (x *CreateBookingRequest) GetParticipantIds() []string {
-	if x != nil {
-		return x.ParticipantIds
 	}
 	return nil
 }
@@ -635,6 +611,7 @@ func (x *GetBookingsByUserIdRequest) GetOffset() int32 {
 type GetBookingsByUserIdResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Bookings      []*Booking             `protobuf:"bytes,1,rep,name=bookings,proto3" json:"bookings,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -674,6 +651,13 @@ func (x *GetBookingsByUserIdResponse) GetBookings() []*Booking {
 		return x.Bookings
 	}
 	return nil
+}
+
+func (x *GetBookingsByUserIdResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
 }
 
 type CancelBookingRequest struct {
@@ -777,6 +761,7 @@ type ListBookingsRequest struct {
 	Status        string                 `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset        int32                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	PlaceId       string                 `protobuf:"bytes,4,opt,name=place_id,json=placeId,proto3" json:"place_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -832,6 +817,13 @@ func (x *ListBookingsRequest) GetOffset() int32 {
 	return 0
 }
 
+func (x *ListBookingsRequest) GetPlaceId() string {
+	if x != nil {
+		return x.PlaceId
+	}
+	return ""
+}
+
 type ListBookingsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Bookings      []*Booking             `protobuf:"bytes,1,rep,name=bookings,proto3" json:"bookings,omitempty"`
@@ -884,126 +876,6 @@ func (x *ListBookingsResponse) GetTotal() int32 {
 	return 0
 }
 
-type ListByPlaceRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PlaceId       string                 `protobuf:"bytes,1,opt,name=place_id,json=placeId,proto3" json:"place_id,omitempty"`
-	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
-	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListByPlaceRequest) Reset() {
-	*x = ListByPlaceRequest{}
-	mi := &file_booking_proto_msgTypes[13]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListByPlaceRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListByPlaceRequest) ProtoMessage() {}
-
-func (x *ListByPlaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_proto_msgTypes[13]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListByPlaceRequest.ProtoReflect.Descriptor instead.
-func (*ListByPlaceRequest) Descriptor() ([]byte, []int) {
-	return file_booking_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *ListByPlaceRequest) GetPlaceId() string {
-	if x != nil {
-		return x.PlaceId
-	}
-	return ""
-}
-
-func (x *ListByPlaceRequest) GetLimit() int32 {
-	if x != nil {
-		return x.Limit
-	}
-	return 0
-}
-
-func (x *ListByPlaceRequest) GetOffset() int32 {
-	if x != nil {
-		return x.Offset
-	}
-	return 0
-}
-
-func (x *ListByPlaceRequest) GetStatus() string {
-	if x != nil {
-		return x.Status
-	}
-	return ""
-}
-
-type ListByPlaceResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Bookings      []*Booking             `protobuf:"bytes,1,rep,name=bookings,proto3" json:"bookings,omitempty"`
-	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListByPlaceResponse) Reset() {
-	*x = ListByPlaceResponse{}
-	mi := &file_booking_proto_msgTypes[14]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListByPlaceResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListByPlaceResponse) ProtoMessage() {}
-
-func (x *ListByPlaceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_proto_msgTypes[14]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListByPlaceResponse.ProtoReflect.Descriptor instead.
-func (*ListByPlaceResponse) Descriptor() ([]byte, []int) {
-	return file_booking_proto_rawDescGZIP(), []int{14}
-}
-
-func (x *ListByPlaceResponse) GetBookings() []*Booking {
-	if x != nil {
-		return x.Bookings
-	}
-	return nil
-}
-
-func (x *ListByPlaceResponse) GetTotal() int32 {
-	if x != nil {
-		return x.Total
-	}
-	return 0
-}
-
 type GetPlaceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -1013,7 +885,7 @@ type GetPlaceRequest struct {
 
 func (x *GetPlaceRequest) Reset() {
 	*x = GetPlaceRequest{}
-	mi := &file_booking_proto_msgTypes[15]
+	mi := &file_booking_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1025,7 +897,7 @@ func (x *GetPlaceRequest) String() string {
 func (*GetPlaceRequest) ProtoMessage() {}
 
 func (x *GetPlaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_proto_msgTypes[15]
+	mi := &file_booking_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1038,7 +910,7 @@ func (x *GetPlaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlaceRequest.ProtoReflect.Descriptor instead.
 func (*GetPlaceRequest) Descriptor() ([]byte, []int) {
-	return file_booking_proto_rawDescGZIP(), []int{15}
+	return file_booking_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetPlaceRequest) GetId() string {
@@ -1057,7 +929,7 @@ type GetPlaceResponse struct {
 
 func (x *GetPlaceResponse) Reset() {
 	*x = GetPlaceResponse{}
-	mi := &file_booking_proto_msgTypes[16]
+	mi := &file_booking_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1069,7 +941,7 @@ func (x *GetPlaceResponse) String() string {
 func (*GetPlaceResponse) ProtoMessage() {}
 
 func (x *GetPlaceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_proto_msgTypes[16]
+	mi := &file_booking_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1082,7 +954,7 @@ func (x *GetPlaceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPlaceResponse.ProtoReflect.Descriptor instead.
 func (*GetPlaceResponse) Descriptor() ([]byte, []int) {
-	return file_booking_proto_rawDescGZIP(), []int{16}
+	return file_booking_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetPlaceResponse) GetPlace() *Place {
@@ -1103,7 +975,7 @@ type ListPlacesRequest struct {
 
 func (x *ListPlacesRequest) Reset() {
 	*x = ListPlacesRequest{}
-	mi := &file_booking_proto_msgTypes[17]
+	mi := &file_booking_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1115,7 +987,7 @@ func (x *ListPlacesRequest) String() string {
 func (*ListPlacesRequest) ProtoMessage() {}
 
 func (x *ListPlacesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_proto_msgTypes[17]
+	mi := &file_booking_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1128,7 +1000,7 @@ func (x *ListPlacesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPlacesRequest.ProtoReflect.Descriptor instead.
 func (*ListPlacesRequest) Descriptor() ([]byte, []int) {
-	return file_booking_proto_rawDescGZIP(), []int{17}
+	return file_booking_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListPlacesRequest) GetLimit() int32 {
@@ -1162,7 +1034,7 @@ type ListPlacesResponse struct {
 
 func (x *ListPlacesResponse) Reset() {
 	*x = ListPlacesResponse{}
-	mi := &file_booking_proto_msgTypes[18]
+	mi := &file_booking_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1174,7 +1046,7 @@ func (x *ListPlacesResponse) String() string {
 func (*ListPlacesResponse) ProtoMessage() {}
 
 func (x *ListPlacesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_proto_msgTypes[18]
+	mi := &file_booking_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1187,7 +1059,7 @@ func (x *ListPlacesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPlacesResponse.ProtoReflect.Descriptor instead.
 func (*ListPlacesResponse) Descriptor() ([]byte, []int) {
-	return file_booking_proto_rawDescGZIP(), []int{18}
+	return file_booking_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListPlacesResponse) GetPlaces() []*Place {
@@ -1215,7 +1087,7 @@ type SearchPlacesRequest struct {
 
 func (x *SearchPlacesRequest) Reset() {
 	*x = SearchPlacesRequest{}
-	mi := &file_booking_proto_msgTypes[19]
+	mi := &file_booking_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1227,7 +1099,7 @@ func (x *SearchPlacesRequest) String() string {
 func (*SearchPlacesRequest) ProtoMessage() {}
 
 func (x *SearchPlacesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_proto_msgTypes[19]
+	mi := &file_booking_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1240,7 +1112,7 @@ func (x *SearchPlacesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPlacesRequest.ProtoReflect.Descriptor instead.
 func (*SearchPlacesRequest) Descriptor() ([]byte, []int) {
-	return file_booking_proto_rawDescGZIP(), []int{19}
+	return file_booking_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *SearchPlacesRequest) GetQuery() string {
@@ -1273,7 +1145,7 @@ type SearchPlacesResponse struct {
 
 func (x *SearchPlacesResponse) Reset() {
 	*x = SearchPlacesResponse{}
-	mi := &file_booking_proto_msgTypes[20]
+	mi := &file_booking_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1285,7 +1157,7 @@ func (x *SearchPlacesResponse) String() string {
 func (*SearchPlacesResponse) ProtoMessage() {}
 
 func (x *SearchPlacesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_proto_msgTypes[20]
+	mi := &file_booking_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1298,7 +1170,7 @@ func (x *SearchPlacesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPlacesResponse.ProtoReflect.Descriptor instead.
 func (*SearchPlacesResponse) Descriptor() ([]byte, []int) {
-	return file_booking_proto_rawDescGZIP(), []int{20}
+	return file_booking_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SearchPlacesResponse) GetPlaces() []*Place {
@@ -1312,7 +1184,7 @@ var File_booking_proto protoreflect.FileDescriptor
 
 const file_booking_proto_rawDesc = "" +
 	"\n" +
-	"\rbooking.proto\x12\abooking\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x02\n" +
+	"\rbooking.proto\x12\abooking\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb2\x02\n" +
 	"\aBooking\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x19\n" +
@@ -1321,14 +1193,12 @@ const file_booking_proto_rawDesc = "" +
 	"\adetails\x18\x05 \x01(\v2\x17.booking.BookingDetailsR\adetails\x12.\n" +
 	"\x06status\x18\x06 \x01(\x0e2\x16.booking.BookingStatusR\x06status\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12'\n" +
-	"\x0fparticipant_ids\x18\b \x03(\tR\x0eparticipantIds\x12\x1f\n" +
-	"\vtotal_price\x18\t \x01(\x02R\n" +
-	"totalPrice\"\xce\x01\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x1f\n" +
+	"\vtotal_price\x18\b \x01(\x02R\n" +
+	"totalPrice\"\xaa\x01\n" +
 	"\x0eBookingDetails\x12 \n" +
-	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\"\n" +
-	"\fparticipants\x18\x02 \x01(\x05R\fparticipants\x12;\n" +
-	"\x06extras\x18\x03 \x03(\v2#.booking.BookingDetails.ExtrasEntryR\x06extras\x1a9\n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x12;\n" +
+	"\x06extras\x18\x02 \x03(\v2#.booking.BookingDetails.ExtrasEntryR\x06extras\x1a9\n" +
 	"\vExtrasEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc4\x02\n" +
@@ -1344,12 +1214,11 @@ const file_booking_proto_rawDesc = "" +
 	"\n" +
 	"base_price\x18\a \x01(\x02R\tbasePrice\x12A\n" +
 	"\x0eavailable_from\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\ravailableFrom\x12=\n" +
-	"\favailable_to\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\vavailableTo\"\xa6\x01\n" +
+	"\favailable_to\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\vavailableTo\"}\n" +
 	"\x14CreateBookingRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
 	"\bplace_id\x18\x02 \x01(\tR\aplaceId\x121\n" +
-	"\adetails\x18\x03 \x01(\v2\x17.booking.BookingDetailsR\adetails\x12'\n" +
-	"\x0fparticipant_ids\x18\x04 \x03(\tR\x0eparticipantIds\"e\n" +
+	"\adetails\x18\x03 \x01(\v2\x17.booking.BookingDetailsR\adetails\"e\n" +
 	"\x15CreateBookingResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
 	"\x06status\x18\x02 \x01(\tR\x06status\x12$\n" +
@@ -1361,27 +1230,21 @@ const file_booking_proto_rawDesc = "" +
 	"\x1aGetBookingsByUserIdRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x03 \x01(\x05R\x06offset\"K\n" +
+	"\x06offset\x18\x03 \x01(\x05R\x06offset\"a\n" +
 	"\x1bGetBookingsByUserIdResponse\x12,\n" +
-	"\bbookings\x18\x01 \x03(\v2\x10.booking.BookingR\bbookings\"&\n" +
+	"\bbookings\x18\x01 \x03(\v2\x10.booking.BookingR\bbookings\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\"&\n" +
 	"\x14CancelBookingRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"K\n" +
 	"\x15CancelBookingResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"[\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"v\n" +
 	"\x13ListBookingsRequest\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x03 \x01(\x05R\x06offset\"Z\n" +
+	"\x06offset\x18\x03 \x01(\x05R\x06offset\x12\x19\n" +
+	"\bplace_id\x18\x04 \x01(\tR\aplaceId\"Z\n" +
 	"\x14ListBookingsResponse\x12,\n" +
-	"\bbookings\x18\x01 \x03(\v2\x10.booking.BookingR\bbookings\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x05R\x05total\"u\n" +
-	"\x12ListByPlaceRequest\x12\x19\n" +
-	"\bplace_id\x18\x01 \x01(\tR\aplaceId\x12\x14\n" +
-	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x03 \x01(\x05R\x06offset\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\tR\x06status\"Y\n" +
-	"\x13ListByPlaceResponse\x12,\n" +
 	"\bbookings\x18\x01 \x03(\v2\x10.booking.BookingR\bbookings\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total\"!\n" +
 	"\x0fGetPlaceRequest\x12\x0e\n" +
@@ -1407,15 +1270,14 @@ const file_booking_proto_rawDesc = "" +
 	"\x1fBOOKING_STATUS_PAYMENT_REQUIRED\x10\x02\x12\x1a\n" +
 	"\x16BOOKING_STATUS_PENDING\x10\x03\x12\x1c\n" +
 	"\x18BOOKING_STATUS_CONFIRMED\x10\x04\x12\x1c\n" +
-	"\x18BOOKING_STATUS_CANCELLED\x10\x052\xcd\x05\n" +
+	"\x18BOOKING_STATUS_CANCELLED\x10\x052\xfb\x04\n" +
 	"\x0eBookingService\x12N\n" +
 	"\rCreateBooking\x12\x1d.booking.CreateBookingRequest\x1a\x1e.booking.CreateBookingResponse\x12E\n" +
 	"\n" +
 	"GetBooking\x12\x1a.booking.GetBookingRequest\x1a\x1b.booking.GetBookingResponse\x12`\n" +
 	"\x13GetBookingsByUserID\x12#.booking.GetBookingsByUserIdRequest\x1a$.booking.GetBookingsByUserIdResponse\x12N\n" +
 	"\rCancelBooking\x12\x1d.booking.CancelBookingRequest\x1a\x1e.booking.CancelBookingResponse\x12K\n" +
-	"\fListBookings\x12\x1c.booking.ListBookingsRequest\x1a\x1d.booking.ListBookingsResponse\x12P\n" +
-	"\x13ListBookingsByPlace\x12\x1b.booking.ListByPlaceRequest\x1a\x1c.booking.ListByPlaceResponse\x12?\n" +
+	"\fListBookings\x12\x1c.booking.ListBookingsRequest\x1a\x1d.booking.ListBookingsResponse\x12?\n" +
 	"\bGetPlace\x12\x18.booking.GetPlaceRequest\x1a\x19.booking.GetPlaceResponse\x12E\n" +
 	"\n" +
 	"ListPlaces\x12\x1a.booking.ListPlacesRequest\x1a\x1b.booking.ListPlacesResponse\x12K\n" +
@@ -1434,7 +1296,7 @@ func file_booking_proto_rawDescGZIP() []byte {
 }
 
 var file_booking_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_booking_proto_goTypes = []any{
 	(BookingStatus)(0),                  // 0: booking.BookingStatus
 	(*Booking)(nil),                     // 1: booking.Booking
@@ -1450,57 +1312,52 @@ var file_booking_proto_goTypes = []any{
 	(*CancelBookingResponse)(nil),       // 11: booking.CancelBookingResponse
 	(*ListBookingsRequest)(nil),         // 12: booking.ListBookingsRequest
 	(*ListBookingsResponse)(nil),        // 13: booking.ListBookingsResponse
-	(*ListByPlaceRequest)(nil),          // 14: booking.ListByPlaceRequest
-	(*ListByPlaceResponse)(nil),         // 15: booking.ListByPlaceResponse
-	(*GetPlaceRequest)(nil),             // 16: booking.GetPlaceRequest
-	(*GetPlaceResponse)(nil),            // 17: booking.GetPlaceResponse
-	(*ListPlacesRequest)(nil),           // 18: booking.ListPlacesRequest
-	(*ListPlacesResponse)(nil),          // 19: booking.ListPlacesResponse
-	(*SearchPlacesRequest)(nil),         // 20: booking.SearchPlacesRequest
-	(*SearchPlacesResponse)(nil),        // 21: booking.SearchPlacesResponse
-	nil,                                 // 22: booking.BookingDetails.ExtrasEntry
-	(*timestamppb.Timestamp)(nil),       // 23: google.protobuf.Timestamp
+	(*GetPlaceRequest)(nil),             // 14: booking.GetPlaceRequest
+	(*GetPlaceResponse)(nil),            // 15: booking.GetPlaceResponse
+	(*ListPlacesRequest)(nil),           // 16: booking.ListPlacesRequest
+	(*ListPlacesResponse)(nil),          // 17: booking.ListPlacesResponse
+	(*SearchPlacesRequest)(nil),         // 18: booking.SearchPlacesRequest
+	(*SearchPlacesResponse)(nil),        // 19: booking.SearchPlacesResponse
+	nil,                                 // 20: booking.BookingDetails.ExtrasEntry
+	(*timestamppb.Timestamp)(nil),       // 21: google.protobuf.Timestamp
 }
 var file_booking_proto_depIdxs = []int32{
 	3,  // 0: booking.Booking.place:type_name -> booking.Place
 	2,  // 1: booking.Booking.details:type_name -> booking.BookingDetails
 	0,  // 2: booking.Booking.status:type_name -> booking.BookingStatus
-	23, // 3: booking.Booking.created_at:type_name -> google.protobuf.Timestamp
-	22, // 4: booking.BookingDetails.extras:type_name -> booking.BookingDetails.ExtrasEntry
-	23, // 5: booking.Place.available_from:type_name -> google.protobuf.Timestamp
-	23, // 6: booking.Place.available_to:type_name -> google.protobuf.Timestamp
+	21, // 3: booking.Booking.created_at:type_name -> google.protobuf.Timestamp
+	20, // 4: booking.BookingDetails.extras:type_name -> booking.BookingDetails.ExtrasEntry
+	21, // 5: booking.Place.available_from:type_name -> google.protobuf.Timestamp
+	21, // 6: booking.Place.available_to:type_name -> google.protobuf.Timestamp
 	2,  // 7: booking.CreateBookingRequest.details:type_name -> booking.BookingDetails
 	3,  // 8: booking.CreateBookingResponse.place:type_name -> booking.Place
 	1,  // 9: booking.GetBookingResponse.booking:type_name -> booking.Booking
 	1,  // 10: booking.GetBookingsByUserIdResponse.bookings:type_name -> booking.Booking
 	1,  // 11: booking.ListBookingsResponse.bookings:type_name -> booking.Booking
-	1,  // 12: booking.ListByPlaceResponse.bookings:type_name -> booking.Booking
-	3,  // 13: booking.GetPlaceResponse.place:type_name -> booking.Place
-	3,  // 14: booking.ListPlacesResponse.places:type_name -> booking.Place
-	3,  // 15: booking.SearchPlacesResponse.places:type_name -> booking.Place
-	4,  // 16: booking.BookingService.CreateBooking:input_type -> booking.CreateBookingRequest
-	6,  // 17: booking.BookingService.GetBooking:input_type -> booking.GetBookingRequest
-	8,  // 18: booking.BookingService.GetBookingsByUserID:input_type -> booking.GetBookingsByUserIdRequest
-	10, // 19: booking.BookingService.CancelBooking:input_type -> booking.CancelBookingRequest
-	12, // 20: booking.BookingService.ListBookings:input_type -> booking.ListBookingsRequest
-	14, // 21: booking.BookingService.ListBookingsByPlace:input_type -> booking.ListByPlaceRequest
-	16, // 22: booking.BookingService.GetPlace:input_type -> booking.GetPlaceRequest
-	18, // 23: booking.BookingService.ListPlaces:input_type -> booking.ListPlacesRequest
-	20, // 24: booking.BookingService.SearchPlaces:input_type -> booking.SearchPlacesRequest
-	5,  // 25: booking.BookingService.CreateBooking:output_type -> booking.CreateBookingResponse
-	7,  // 26: booking.BookingService.GetBooking:output_type -> booking.GetBookingResponse
-	9,  // 27: booking.BookingService.GetBookingsByUserID:output_type -> booking.GetBookingsByUserIdResponse
-	11, // 28: booking.BookingService.CancelBooking:output_type -> booking.CancelBookingResponse
-	13, // 29: booking.BookingService.ListBookings:output_type -> booking.ListBookingsResponse
-	15, // 30: booking.BookingService.ListBookingsByPlace:output_type -> booking.ListByPlaceResponse
-	17, // 31: booking.BookingService.GetPlace:output_type -> booking.GetPlaceResponse
-	19, // 32: booking.BookingService.ListPlaces:output_type -> booking.ListPlacesResponse
-	21, // 33: booking.BookingService.SearchPlaces:output_type -> booking.SearchPlacesResponse
-	25, // [25:34] is the sub-list for method output_type
-	16, // [16:25] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	3,  // 12: booking.GetPlaceResponse.place:type_name -> booking.Place
+	3,  // 13: booking.ListPlacesResponse.places:type_name -> booking.Place
+	3,  // 14: booking.SearchPlacesResponse.places:type_name -> booking.Place
+	4,  // 15: booking.BookingService.CreateBooking:input_type -> booking.CreateBookingRequest
+	6,  // 16: booking.BookingService.GetBooking:input_type -> booking.GetBookingRequest
+	8,  // 17: booking.BookingService.GetBookingsByUserID:input_type -> booking.GetBookingsByUserIdRequest
+	10, // 18: booking.BookingService.CancelBooking:input_type -> booking.CancelBookingRequest
+	12, // 19: booking.BookingService.ListBookings:input_type -> booking.ListBookingsRequest
+	14, // 20: booking.BookingService.GetPlace:input_type -> booking.GetPlaceRequest
+	16, // 21: booking.BookingService.ListPlaces:input_type -> booking.ListPlacesRequest
+	18, // 22: booking.BookingService.SearchPlaces:input_type -> booking.SearchPlacesRequest
+	5,  // 23: booking.BookingService.CreateBooking:output_type -> booking.CreateBookingResponse
+	7,  // 24: booking.BookingService.GetBooking:output_type -> booking.GetBookingResponse
+	9,  // 25: booking.BookingService.GetBookingsByUserID:output_type -> booking.GetBookingsByUserIdResponse
+	11, // 26: booking.BookingService.CancelBooking:output_type -> booking.CancelBookingResponse
+	13, // 27: booking.BookingService.ListBookings:output_type -> booking.ListBookingsResponse
+	15, // 28: booking.BookingService.GetPlace:output_type -> booking.GetPlaceResponse
+	17, // 29: booking.BookingService.ListPlaces:output_type -> booking.ListPlacesResponse
+	19, // 30: booking.BookingService.SearchPlaces:output_type -> booking.SearchPlacesResponse
+	23, // [23:31] is the sub-list for method output_type
+	15, // [15:23] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_booking_proto_init() }
@@ -1514,7 +1371,7 @@ func file_booking_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_booking_proto_rawDesc), len(file_booking_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   22,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

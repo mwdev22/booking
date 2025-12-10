@@ -2,19 +2,27 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/mwdev22/booking/booking"
 	"github.com/mwdev22/booking/booking/gen/bookingpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+var (
+	ErrInvalidDateFormat = booking.ErrInvalidDateFormat
+	ErrCouldNotCreate    = booking.ErrCouldNotCreate
+	ErrNotFound          = booking.ErrNotFound
+	ErrCancelFailed      = booking.ErrCancelFailed
+)
+
 type BookingService struct {
 	bookingpb.UnimplementedBookingServiceServer
-	bookings booking.BookingRepository
-	places   booking.PlaceRepository
+	bookings booking.BookingStore
+	places   booking.PlaceStore
 }
 
-func NewBookingService(bookings booking.BookingRepository, places booking.PlaceRepository) *BookingService {
+func NewBookingService(bookings booking.BookingStore, places booking.PlaceStore) *BookingService {
 	return &BookingService{
 		bookings: bookings,
 		places:   places,
@@ -27,11 +35,9 @@ func (bs *BookingService) Create(ctx context.Context, req *bookingpb.CreateBooki
 		UserID:  req.UserId,
 		PlaceID: req.PlaceId,
 		Details: &booking.BookingDetails{
-			Description:  req.Details.Description,
-			Participants: int(req.Details.Participants),
-			Extras:       req.Details.Extras,
+			Description: req.Details.Description,
+			Extras:      req.Details.Extras,
 		},
-		ParticipantIDs: req.ParticipantIds,
 	})
 
 	return bookingpb.CreateBookingResponse{Id: id}, err
@@ -43,26 +49,32 @@ func (bs *BookingService) GetByID(ctx context.Context, req *bookingpb.GetBooking
 		return nil, err
 	}
 
+	created, err := parseDate(b.CreatedAt)
+	if err != nil {
+		return nil, ErrInvalidDateFormat
+	}
+
 	pbBooking := &bookingpb.Booking{
 		Id:      b.ID,
 		UserId:  b.UserID,
 		PlaceId: b.PlaceID,
 		Details: &bookingpb.BookingDetails{
-			Description:  b.Details.Description,
-			Participants: int32(b.Details.Participants),
-			Extras:       b.Details.Extras,
+			Description: b.Details.Description,
+			Extras:      b.Details.Extras,
 		},
-		Status:         b.Status.ToProto(),
-		CreatedAt:      timestamppb.Now(),
-		TotalPrice:     b.TotalPrice,
-		ParticipantIds: b.ParticipantIDs,
+		Status:     b.Status.ToProto(),
+		CreatedAt:  timestamppb.New(created),
+		TotalPrice: b.TotalPrice,
 	}
 
 	return &bookingpb.GetBookingResponse{Booking: pbBooking}, nil
 }
 
 func (bs *BookingService) GetByUserID(ctx context.Context, req *bookingpb.GetBookingsByUserIdRequest) (*bookingpb.GetBookingsByUserIdResponse, error) {
-	bookings, err := bs.bookings.GetByUserID(ctx, req.UserId, &booking.ListFilters{})
+	bookings, err := bs.bookings.GetByUserID(ctx, req.UserId, &booking.ListFilters{
+		Limit:  int(req.Limit),
+		Offset: int(req.Offset),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -74,18 +86,51 @@ func (bs *BookingService) GetByUserID(ctx context.Context, req *bookingpb.GetBoo
 			UserId:  b.UserID,
 			PlaceId: b.PlaceID,
 			Details: &bookingpb.BookingDetails{
-				Description:  b.Details.Description,
-				Participants: int32(b.Details.Participants),
-				Extras:       b.Details.Extras,
+				Description: b.Details.Description,
+				Extras:      b.Details.Extras,
 			},
-			Status:         b.Status.ToProto(),
-			CreatedAt:      timestamppb.Now(),
-			TotalPrice:     b.TotalPrice,
-			ParticipantIds: b.ParticipantIDs,
+			Status:     b.Status.ToProto(),
+			CreatedAt:  timestamppb.Now(),
+			TotalPrice: b.TotalPrice,
 		}
 	}
 
 	return &bookingpb.GetBookingsByUserIdResponse{Bookings: pbBookings}, nil
+}
+
+func (bs *BookingService) ListBookings(ctx context.Context, req *bookingpb.ListBookingsRequest) (*bookingpb.ListBookingsResponse, error) {
+	filters := &booking.ListFilters{
+		Limit:   int(req.Limit),
+		Offset:  int(req.Offset),
+		Status:  req.Status,
+		PlaceID: req.PlaceId,
+	}
+	bookings, total, err := bs.bookings.List(ctx, filters)
+	if err != nil {
+		return nil, err
+	}
+
+	pbBookings := make([]*bookingpb.Booking, len(bookings))
+	for i, b := range bookings {
+		created, err := parseDate(b.CreatedAt)
+		if err != nil {
+			return nil, ErrInvalidDateFormat
+		}
+		pbBookings[i] = &bookingpb.Booking{
+			Id:      b.ID,
+			UserId:  b.UserID,
+			PlaceId: b.PlaceID,
+			Details: &bookingpb.BookingDetails{
+				Description: b.Details.Description,
+				Extras:      b.Details.Extras,
+			},
+			Status:     b.Status.ToProto(),
+			CreatedAt:  timestamppb.New(created),
+			TotalPrice: b.TotalPrice,
+		}
+	}
+
+	return &bookingpb.ListBookingsResponse{Bookings: pbBookings, Total: int32(total)}, nil
 }
 
 func (bs *BookingService) CancelBooking(ctx context.Context, req *bookingpb.CancelBookingRequest) (*bookingpb.CancelBookingResponse, error) {
@@ -93,47 +138,6 @@ func (bs *BookingService) CancelBooking(ctx context.Context, req *bookingpb.Canc
 	return &bookingpb.CancelBookingResponse{}, err
 }
 
-func (bs *BookingService) GetPlace(ctx context.Context, req *bookingpb.GetPlaceRequest) (*bookingpb.GetPlaceResponse, error) {
-	place, err := bs.places.GetByID(ctx, req.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	pbPlace := &bookingpb.Place{
-		Id:            place.ID,
-		Name:          place.Name,
-		Address:       place.Address,
-		Description:   place.Description,
-		Category:      place.Category,
-		Facilities:    place.Facilities,
-		BasePrice:     place.BasePrice,
-		AvailableFrom: timestamppb.Now(),
-		AvailableTo:   timestamppb.Now(),
-	}
-
-	return &bookingpb.GetPlaceResponse{Place: pbPlace}, nil
-}
-
-func (bs *BookingService) SearchPlaces(ctx context.Context, req *bookingpb.SearchPlacesRequest) (*bookingpb.SearchPlacesResponse, error) {
-	places, err := bs.places.Search(ctx, req.Query, req.Category, int(req.Limit))
-	if err != nil {
-		return nil, err
-	}
-
-	pbPlaces := make([]*bookingpb.Place, len(places))
-	for i, place := range places {
-		pbPlaces[i] = &bookingpb.Place{
-			Id:            place.ID,
-			Name:          place.Name,
-			Address:       place.Address,
-			Description:   place.Description,
-			Category:      place.Category,
-			Facilities:    place.Facilities,
-			BasePrice:     place.BasePrice,
-			AvailableFrom: timestamppb.Now(),
-			AvailableTo:   timestamppb.Now(),
-		}
-	}
-
-	return &bookingpb.SearchPlacesResponse{Places: pbPlaces}, nil
+func parseDate(dateStr string) (time.Time, error) {
+	return time.Parse(time.RFC3339, dateStr)
 }

@@ -39,16 +39,14 @@ func (bc *Client) Close() error {
 
 func (bc *Client) Create(ctx context.Context, userID, placeID string, details *BookingDetails, participantIDs []string) (string, error) {
 	pbDetails := &bookingpb.BookingDetails{
-		Description:  details.Description,
-		Participants: int32(details.Participants),
-		Extras:       details.Extras,
+		Description: details.Description,
+		Extras:      details.Extras,
 	}
 
 	req := &bookingpb.CreateBookingRequest{
-		UserId:         userID,
-		PlaceId:        placeID,
-		Details:        pbDetails,
-		ParticipantIds: participantIDs,
+		UserId:  userID,
+		PlaceId: placeID,
+		Details: pbDetails,
 	}
 
 	resp, err := bc.c.CreateBooking(ctx, req)
@@ -76,26 +74,12 @@ func (bc *Client) GetByUserID(ctx context.Context, userID string, limit, offset 
 
 func (bc *Client) List(ctx context.Context, filters *ListFilters) ([]*Booking, int32, error) {
 	req := &bookingpb.ListBookingsRequest{
-		Status: filters.Status,
-		Limit:  int32(filters.Limit),
-		Offset: int32(filters.Offset),
-	}
-	resp, err := bc.c.ListBookings(ctx, req)
-	if err != nil {
-		return nil, 0, err
-	}
-	return protoBookingsToDomain(resp.Bookings), resp.Total, nil
-}
-
-// ListBookingsByPlace
-func (bc *Client) ListByPlace(ctx context.Context, placeID string, filters *ListFilters) ([]*Booking, int32, error) {
-	req := &bookingpb.ListByPlaceRequest{
-		PlaceId: placeID,
+		Status:  filters.Status,
 		Limit:   int32(filters.Limit),
 		Offset:  int32(filters.Offset),
-		Status:  filters.Status,
+		PlaceId: filters.PlaceID,
 	}
-	resp, err := bc.c.ListBookingsByPlace(ctx, req)
+	resp, err := bc.c.ListBookings(ctx, req)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -161,14 +145,12 @@ func protoToBooking(pb *bookingpb.Booking) *Booking {
 		PlaceID: pb.PlaceId,
 		Place:   protoToPlace(pb.Place),
 		Details: &BookingDetails{
-			Description:  pb.Details.Description,
-			Participants: int(pb.Details.Participants),
-			Extras:       pb.Details.Extras,
+			Description: pb.Details.Description,
+			Extras:      pb.Details.Extras,
 		},
-		Status:         StatusFromProto(pb.Status),
-		CreatedAt:      pb.CreatedAt.AsTime().Format(time.RFC3339),
-		ParticipantIDs: pb.ParticipantIds,
-		TotalPrice:     pb.TotalPrice,
+		Status:     StatusFromProto(pb.Status),
+		CreatedAt:  pb.CreatedAt.AsTime().Format(time.RFC3339),
+		TotalPrice: pb.TotalPrice,
 	}
 }
 

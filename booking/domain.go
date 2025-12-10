@@ -6,15 +6,32 @@ import (
 	"github.com/mwdev22/booking/booking/gen/bookingpb"
 )
 
-type BookingStatus string
+type BookingStatus int
 
 const (
-	StatusCreated         BookingStatus = "CREATED"
-	StatusPaymentRequired BookingStatus = "PAYMENT_REQUIRED"
-	StatusPending         BookingStatus = "PENDING"
-	StatusConfirmed       BookingStatus = "CONFIRMED"
-	StatusCancelled       BookingStatus = "CANCELLED"
+	StatusCreated BookingStatus = iota
+	StatusPaymentRequired
+	StatusPending
+	StatusConfirmed
+	StatusCancelled
 )
+
+func (bs BookingStatus) String() string {
+	switch bs {
+	case StatusCreated:
+		return "CREATED"
+	case StatusPaymentRequired:
+		return "PAYMENT_REQUIRED"
+	case StatusPending:
+		return "PENDING"
+	case StatusConfirmed:
+		return "CONFIRMED"
+	case StatusCancelled:
+		return "CANCELLED"
+	default:
+		return ""
+	}
+}
 
 func (bs BookingStatus) ToProto() bookingpb.BookingStatus {
 	switch bs {
@@ -46,20 +63,19 @@ func StatusFromProto(bs bookingpb.BookingStatus) BookingStatus {
 	case bookingpb.BookingStatus_BOOKING_STATUS_CANCELLED:
 		return StatusCancelled
 	default:
-		return ""
+		return StatusCreated
 	}
 }
 
 type Booking struct {
-	ID             string          `json:"id"`
-	UserID         string          `json:"user_id"`
-	PlaceID        string          `json:"place_id,omitempty"`
-	Place          *Place          `json:"place,omitempty"`
-	Details        *BookingDetails `json:"details"`
-	Status         BookingStatus   `json:"status"`
-	CreatedAt      string          `json:"created_at"`
-	ParticipantIDs []string        `json:"participant_ids,omitempty"`
-	TotalPrice     float32         `json:"total_price,omitempty"`
+	ID         string          `json:"id"`
+	UserID     string          `json:"user_id"`
+	PlaceID    string          `json:"place_id,omitempty"`
+	Place      *Place          `json:"place,omitempty"`
+	Details    *BookingDetails `json:"details"`
+	Status     BookingStatus   `json:"status"`
+	CreatedAt  string          `json:"created_at"`
+	TotalPrice float32         `json:"total_price,omitempty"`
 }
 
 type BookingDetails struct {
@@ -81,9 +97,10 @@ type Place struct {
 }
 
 type ListFilters struct {
-	Limit  int    `json:"limit"`
-	Offset int    `json:"offset"`
-	Status string `json:"status,omitempty"`
+	Limit   int    `json:"limit"`
+	Offset  int    `json:"offset"`
+	Status  string `json:"status,omitempty"`
+	PlaceID string `json:"place_id,omitempty"`
 }
 
 type PlaceFilters struct {
@@ -92,14 +109,15 @@ type PlaceFilters struct {
 	Category string `json:"category,omitempty"`
 }
 
-type BookingRepository interface {
+type BookingStore interface {
 	Create(ctx context.Context, b *Booking) (string, error)
 	GetByID(ctx context.Context, id string) (*Booking, error)
 	GetByUserID(ctx context.Context, userID string, filters *ListFilters) ([]*Booking, error)
 	Cancel(ctx context.Context, bookingID string) error
+	List(ctx context.Context, filters *ListFilters) ([]*Booking, int, error)
 }
 
-type PlaceRepository interface {
+type PlaceStore interface {
 	GetByID(ctx context.Context, id string) (*Place, error)
 	Search(ctx context.Context, query, category string, limit int) ([]*Place, error)
 }

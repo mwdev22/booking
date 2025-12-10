@@ -24,7 +24,6 @@ const (
 	BookingService_GetBookingsByUserID_FullMethodName = "/booking.BookingService/GetBookingsByUserID"
 	BookingService_CancelBooking_FullMethodName       = "/booking.BookingService/CancelBooking"
 	BookingService_ListBookings_FullMethodName        = "/booking.BookingService/ListBookings"
-	BookingService_ListBookingsByPlace_FullMethodName = "/booking.BookingService/ListBookingsByPlace"
 	BookingService_GetPlace_FullMethodName            = "/booking.BookingService/GetPlace"
 	BookingService_ListPlaces_FullMethodName          = "/booking.BookingService/ListPlaces"
 	BookingService_SearchPlaces_FullMethodName        = "/booking.BookingService/SearchPlaces"
@@ -39,7 +38,6 @@ type BookingServiceClient interface {
 	GetBookingsByUserID(ctx context.Context, in *GetBookingsByUserIdRequest, opts ...grpc.CallOption) (*GetBookingsByUserIdResponse, error)
 	CancelBooking(ctx context.Context, in *CancelBookingRequest, opts ...grpc.CallOption) (*CancelBookingResponse, error)
 	ListBookings(ctx context.Context, in *ListBookingsRequest, opts ...grpc.CallOption) (*ListBookingsResponse, error)
-	ListBookingsByPlace(ctx context.Context, in *ListByPlaceRequest, opts ...grpc.CallOption) (*ListByPlaceResponse, error)
 	GetPlace(ctx context.Context, in *GetPlaceRequest, opts ...grpc.CallOption) (*GetPlaceResponse, error)
 	ListPlaces(ctx context.Context, in *ListPlacesRequest, opts ...grpc.CallOption) (*ListPlacesResponse, error)
 	SearchPlaces(ctx context.Context, in *SearchPlacesRequest, opts ...grpc.CallOption) (*SearchPlacesResponse, error)
@@ -103,16 +101,6 @@ func (c *bookingServiceClient) ListBookings(ctx context.Context, in *ListBooking
 	return out, nil
 }
 
-func (c *bookingServiceClient) ListBookingsByPlace(ctx context.Context, in *ListByPlaceRequest, opts ...grpc.CallOption) (*ListByPlaceResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListByPlaceResponse)
-	err := c.cc.Invoke(ctx, BookingService_ListBookingsByPlace_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *bookingServiceClient) GetPlace(ctx context.Context, in *GetPlaceRequest, opts ...grpc.CallOption) (*GetPlaceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetPlaceResponse)
@@ -152,7 +140,6 @@ type BookingServiceServer interface {
 	GetBookingsByUserID(context.Context, *GetBookingsByUserIdRequest) (*GetBookingsByUserIdResponse, error)
 	CancelBooking(context.Context, *CancelBookingRequest) (*CancelBookingResponse, error)
 	ListBookings(context.Context, *ListBookingsRequest) (*ListBookingsResponse, error)
-	ListBookingsByPlace(context.Context, *ListByPlaceRequest) (*ListByPlaceResponse, error)
 	GetPlace(context.Context, *GetPlaceRequest) (*GetPlaceResponse, error)
 	ListPlaces(context.Context, *ListPlacesRequest) (*ListPlacesResponse, error)
 	SearchPlaces(context.Context, *SearchPlacesRequest) (*SearchPlacesResponse, error)
@@ -180,9 +167,6 @@ func (UnimplementedBookingServiceServer) CancelBooking(context.Context, *CancelB
 }
 func (UnimplementedBookingServiceServer) ListBookings(context.Context, *ListBookingsRequest) (*ListBookingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListBookings not implemented")
-}
-func (UnimplementedBookingServiceServer) ListBookingsByPlace(context.Context, *ListByPlaceRequest) (*ListByPlaceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListBookingsByPlace not implemented")
 }
 func (UnimplementedBookingServiceServer) GetPlace(context.Context, *GetPlaceRequest) (*GetPlaceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPlace not implemented")
@@ -304,24 +288,6 @@ func _BookingService_ListBookings_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BookingService_ListBookingsByPlace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByPlaceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BookingServiceServer).ListBookingsByPlace(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: BookingService_ListBookingsByPlace_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).ListBookingsByPlace(ctx, req.(*ListByPlaceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _BookingService_GetPlace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPlaceRequest)
 	if err := dec(in); err != nil {
@@ -402,10 +368,6 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListBookings",
 			Handler:    _BookingService_ListBookings_Handler,
-		},
-		{
-			MethodName: "ListBookingsByPlace",
-			Handler:    _BookingService_ListBookingsByPlace_Handler,
 		},
 		{
 			MethodName: "GetPlace",
