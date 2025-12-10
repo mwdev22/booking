@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+package booking;
+option go_package = "booking/proto/bookingpb";
+
+import "google/protobuf/timestamp.proto";
+
+// Domain objects
+message Booking {
+    string id = 1;
+    string user_id = 2;
+    string place_id = 3;           // NEW: Reference do Place
+    Place place = 4;               // NEW: Embedded Place data
+    BookingDetails details = 5;
+    string status = 6;
+    google.protobuf.Timestamp created_at = 7;  // Poprawka: Timestamp
+    repeated string participant_ids = 8;
+    float total_price = 9;         // Dodane dla payments integration
+}
+
+message BookingDetails {
+    string description = 1;        // Dodane: szczegóły rezerwacji
+    int32 participants = 2;
+    map<string, string> extras = 3; 
+}
+
+message Place {
+    string id = 1;
+    string name = 2;
+    string address = 3;
+    string description = 4;
+    string category = 5;           // NEW: stadion, hala, etc.
+    repeated string facilities = 6; // NEW: parking, WiFi, etc.
+    float base_price = 7;          // NEW: cena bazowa
+    google.protobuf.Timestamp available_from = 8;
+    google.protobuf.Timestamp available_to = 9;
+}
+
+// gRPC Service - rozszerzony o Places
+service BookingService {
+    rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse);
+    rpc GetBooking(GetBookingRequest) returns (GetBookingResponse);
+    rpc GetBookingsByUser(GetBookingsByUserRequest) returns (GetBookingsByUserResponse);
+    rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse);
+    
+    rpc ListBookings(ListBookingsRequest) returns (ListBookingsResponse);
+    rpc ListBookingsByPlace(ListByPlaceRequest) returns (ListByPlaceResponse);
+    
+    rpc GetPlace(GetPlaceRequest) returns (GetPlaceResponse);
+    rpc ListPlaces(ListPlacesRequest) returns (ListPlacesResponse);
+    rpc SearchPlaces(SearchPlacesRequest) returns (SearchPlacesResponse);
+}
+
+message CreateBookingRequest {
+    string user_id = 1;
+    string place_id = 2;           // NEW: Wymagany place_id
+    BookingDetails details = 3;
+    repeated string participant_ids = 4;
+}
+
+message CreateBookingResponse {
+    string id = 1;
+    string status = 2;
+    Place place = 3;               // Zwróć dane place
+}
+
+message GetBookingRequest {
+    string id = 1;
+}
+
+message GetBookingResponse {
+    Booking booking = 1;
+}
+
+message GetBookingsByUserRequest {
+    string user_id = 1;
+}
+
+message GetBookingsByUserResponse {
+    repeated Booking bookings = 1;
+}
+
+message CancelBookingRequest {
+    string id = 1;
+}
+
+message CancelBookingResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// List operations
+message ListBookingsRequest {
+    string status = 1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+
+message ListBookingsResponse {
+    repeated Booking bookings = 1;
+    int32 total = 2;
+}
+
+message ListByPlaceRequest {
+    string place_id = 1;           // Zamieniono na string
+    int32 limit = 2;
+    int32 offset = 3;
+    string status = 4;
+}
+
+message ListByPlaceResponse {
+    repeated Booking bookings = 1;
+    int32 total = 2;
+}
+
+// Place operations
+message GetPlaceRequest {
+    string id = 1;
+}
+
+message GetPlaceResponse {
+    Place place = 1;
+}
+
+message ListPlacesRequest {
+    int32 limit = 1;
+    int32 offset = 2;
+    string category = 3;  
+}
+
+message ListPlacesResponse {
+    repeated Place places = 1;
+    int32 total = 2;
+}
+
+message SearchPlacesRequest {
+    string query = 1;      
+    string category = 2;
+    int32 limit = 3;
+}
+
+message SearchPlacesResponse {
+    repeated Place places = 1;
+}
