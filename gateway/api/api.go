@@ -55,7 +55,7 @@ func (a *Api) Run() error {
 	})
 
 	server := &http.Server{
-		Addr:         a.cfg.Addr,
+		Addr:         a.cfg.Base.Addr,
 		Handler:      c.Handler(mux),
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -65,7 +65,7 @@ func (a *Api) Run() error {
 	serverErrors := make(chan error, 1)
 
 	go func() {
-		log.Printf("Server is listening on %s", a.cfg.Addr)
+		log.Printf("Server is listening on %s", a.cfg.Base.Addr)
 		serverErrors <- server.ListenAndServe()
 	}()
 

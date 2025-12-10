@@ -37,7 +37,6 @@ func (bc *Client) Close() error {
 	return bc.grpcClient.Close()
 }
 
-// CreateBooking
 func (bc *Client) Create(ctx context.Context, userID, placeID string, details *BookingDetails, participantIDs []string) (string, error) {
 	pbDetails := &bookingpb.BookingDetails{
 		Description:  details.Description,
@@ -59,7 +58,6 @@ func (bc *Client) Create(ctx context.Context, userID, placeID string, details *B
 	return resp.Id, nil
 }
 
-// GetBooking
 func (bc *Client) GetByID(ctx context.Context, id string) (*Booking, error) {
 	resp, err := bc.c.GetBooking(ctx, &bookingpb.GetBookingRequest{Id: id})
 	if err != nil {
@@ -68,16 +66,14 @@ func (bc *Client) GetByID(ctx context.Context, id string) (*Booking, error) {
 	return protoToBooking(resp.Booking), nil
 }
 
-// GetBookingsByUser
-func (bc *Client) GetByUserID(ctx context.Context, userID string) ([]*Booking, error) {
-	resp, err := bc.c.GetBookingsByUser(ctx, &bookingpb.GetBookingsByUserRequest{UserId: userID})
+func (bc *Client) GetByUserID(ctx context.Context, userID string, limit, offset int) ([]*Booking, error) {
+	resp, err := bc.c.GetBookingsByUserID(ctx, &bookingpb.GetBookingsByUserIdRequest{UserId: userID, Limit: int32(limit), Offset: int32(offset)})
 	if err != nil {
 		return nil, err
 	}
 	return protoBookingsToDomain(resp.Bookings), nil
 }
 
-// ListBookings
 func (bc *Client) List(ctx context.Context, filters *ListFilters) ([]*Booking, int32, error) {
 	req := &bookingpb.ListBookingsRequest{
 		Status: filters.Status,
@@ -106,7 +102,6 @@ func (bc *Client) ListByPlace(ctx context.Context, placeID string, filters *List
 	return protoBookingsToDomain(resp.Bookings), resp.Total, nil
 }
 
-// CancelBooking
 func (bc *Client) Cancel(ctx context.Context, bookingID string) error {
 	resp, err := bc.c.CancelBooking(ctx, &bookingpb.CancelBookingRequest{Id: bookingID})
 	if err != nil {
@@ -118,7 +113,6 @@ func (bc *Client) Cancel(ctx context.Context, bookingID string) error {
 	return nil
 }
 
-// Place operations
 func (bc *Client) GetPlace(ctx context.Context, id string) (*Place, error) {
 	resp, err := bc.c.GetPlace(ctx, &bookingpb.GetPlaceRequest{Id: id})
 	if err != nil {
@@ -160,7 +154,6 @@ func (bc *Client) SearchPlaces(ctx context.Context, query, category string, limi
 	return places, nil
 }
 
-// Konwersje
 func protoToBooking(pb *bookingpb.Booking) *Booking {
 	return &Booking{
 		ID:      pb.Id,
@@ -172,10 +165,10 @@ func protoToBooking(pb *bookingpb.Booking) *Booking {
 			Participants: int(pb.Details.Participants),
 			Extras:       pb.Details.Extras,
 		},
-		Status:         pb.Status,
+		Status:         StatusFromProto(pb.Status),
 		CreatedAt:      pb.CreatedAt.AsTime().Format(time.RFC3339),
 		ParticipantIDs: pb.ParticipantIds,
-		TotalPrice:     float64(pb.TotalPrice),
+		TotalPrice:     pb.TotalPrice,
 	}
 }
 
@@ -195,7 +188,7 @@ func protoToPlace(pb *bookingpb.Place) *Place {
 		Description:   pb.Description,
 		Category:      pb.Category,
 		Facilities:    pb.Facilities,
-		BasePrice:     float64(pb.BasePrice),
+		BasePrice:     pb.BasePrice,
 		AvailableFrom: pb.AvailableFrom.AsTime().Format(time.RFC3339),
 		AvailableTo:   pb.AvailableTo.AsTime().Format(time.RFC3339),
 	}

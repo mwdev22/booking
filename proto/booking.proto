@@ -1,25 +1,33 @@
 syntax = "proto3";
 
 package booking;
-option go_package = "booking/proto/bookingpb";
+option go_package = "booking/gen/bookingpb";
 
 import "google/protobuf/timestamp.proto";
 
-// Domain objects
+enum BookingStatus {
+    BOOKING_STATUS_UNSPECIFIED = 0;
+    BOOKING_STATUS_CREATED = 1;
+    BOOKING_STATUS_PAYMENT_REQUIRED = 2;
+    BOOKING_STATUS_PENDING = 3;
+    BOOKING_STATUS_CONFIRMED = 4;
+    BOOKING_STATUS_CANCELLED = 5;
+}
+
 message Booking {
     string id = 1;
     string user_id = 2;
-    string place_id = 3;           // NEW: Reference do Place
-    Place place = 4;               // NEW: Embedded Place data
+    string place_id = 3;        
+    Place place = 4;              
     BookingDetails details = 5;
-    string status = 6;
-    google.protobuf.Timestamp created_at = 7;  // Poprawka: Timestamp
+    BookingStatus status = 6;
+    google.protobuf.Timestamp created_at = 7;  
     repeated string participant_ids = 8;
-    float total_price = 9;         // Dodane dla payments integration
+    float total_price = 9;       
 }
 
 message BookingDetails {
-    string description = 1;        // Dodane: szczegóły rezerwacji
+    string description = 1;       
     int32 participants = 2;
     map<string, string> extras = 3; 
 }
@@ -29,18 +37,17 @@ message Place {
     string name = 2;
     string address = 3;
     string description = 4;
-    string category = 5;           // NEW: stadion, hala, etc.
-    repeated string facilities = 6; // NEW: parking, WiFi, etc.
-    float base_price = 7;          // NEW: cena bazowa
+    string category = 5;           
+    repeated string facilities = 6;
+    float base_price = 7;          
     google.protobuf.Timestamp available_from = 8;
     google.protobuf.Timestamp available_to = 9;
 }
 
-// gRPC Service - rozszerzony o Places
 service BookingService {
     rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse);
     rpc GetBooking(GetBookingRequest) returns (GetBookingResponse);
-    rpc GetBookingsByUser(GetBookingsByUserRequest) returns (GetBookingsByUserResponse);
+    rpc GetBookingsByUserID(GetBookingsByUserIdRequest) returns (GetBookingsByUserIdResponse);
     rpc CancelBooking(CancelBookingRequest) returns (CancelBookingResponse);
     
     rpc ListBookings(ListBookingsRequest) returns (ListBookingsResponse);
@@ -53,7 +60,7 @@ service BookingService {
 
 message CreateBookingRequest {
     string user_id = 1;
-    string place_id = 2;           // NEW: Wymagany place_id
+    string place_id = 2;           
     BookingDetails details = 3;
     repeated string participant_ids = 4;
 }
@@ -61,7 +68,7 @@ message CreateBookingRequest {
 message CreateBookingResponse {
     string id = 1;
     string status = 2;
-    Place place = 3;               // Zwróć dane place
+    Place place = 3;               
 }
 
 message GetBookingRequest {
@@ -72,11 +79,13 @@ message GetBookingResponse {
     Booking booking = 1;
 }
 
-message GetBookingsByUserRequest {
+message GetBookingsByUserIdRequest {
     string user_id = 1;
+    int32 limit = 2;
+    int32 offset = 3;
 }
 
-message GetBookingsByUserResponse {
+message GetBookingsByUserIdResponse {
     repeated Booking bookings = 1;
 }
 
@@ -89,7 +98,6 @@ message CancelBookingResponse {
     string message = 2;
 }
 
-// List operations
 message ListBookingsRequest {
     string status = 1;
     int32 limit = 2;
@@ -102,7 +110,7 @@ message ListBookingsResponse {
 }
 
 message ListByPlaceRequest {
-    string place_id = 1;           // Zamieniono na string
+    string place_id = 1;          
     int32 limit = 2;
     int32 offset = 3;
     string status = 4;
@@ -113,7 +121,6 @@ message ListByPlaceResponse {
     int32 total = 2;
 }
 
-// Place operations
 message GetPlaceRequest {
     string id = 1;
 }

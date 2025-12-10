@@ -20,7 +20,7 @@ func main() {
 	)
 
 	appCfg := &gateway.AppConfig{
-		BaseCfg:     baseCfg,
+		Base:     baseCfg,
 		BookingAddr: config.GetEnv("BOOKING_ADDR", "localhost:50037"),
 		PaymentAddr: config.GetEnv("PAYMENT_ADDR", "localhost:50052"),
 	}

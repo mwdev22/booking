@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/mwdev22/booking/api"
+	"github.com/mwdev22/booking/booking/api"
 	mongo "github.com/mwdev22/database/mongo"
 	config "github.com/mwdev22/gocfg"
 	"github.com/mwdev22/grpclib/grpcserver"
